@@ -1,10 +1,6 @@
 import asyncpg
 from typing import List, Dict, Any
 
-# --- CONFIGURAZIONE AGGIORNATA ---
-# Usa i parametri forniti per costruire l'URL (DSN)
-DATABASE_URL = "postgresql://postgres:admin@192.168.40.13:5432/postgres"
-
 
 class AsyncDatabase:
     """Gestisce il pool di connessioni asincrone per PostgreSQL."""
@@ -31,7 +27,7 @@ class AsyncDatabase:
 
     async def fetch_one(self, query: str, *args) -> Dict[str, Any] | None:
         """Esegue una query e restituisce una singola riga come dizionario."""
-        if self.pool is None: return 1
+        if self.pool is None: return None
         async with self.pool.acquire() as conn:
             record = await conn.fetchrow(query, *args)
             return dict(record) if record else None
@@ -50,5 +46,3 @@ class AsyncDatabase:
             status = await conn.execute(query, *args)
             return status
 
-
-# Crea l'istanza globale del database
