@@ -27,16 +27,25 @@ db = AsyncDatabase()
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     await db.connect()
+    query1 = """SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,"ora"::TEXT AS ora FROM plc1.stati ORDER BY ora DESC"""
+    query2 = """SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU,"ora"::TEXT AS ora  FROM plc1.contatori ORDER BY ora DESC"""
+    query3 = """SELECT id,stato,"ora"::TEXT AS ora  FROM plc1.notifiche ORDER BY ora DESC"""
+    query4 = """SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,"ora"::TEXT AS ora FROM plc2.stati ORDER BY ora DESC"""
+    query5 = """SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU,"ora"::TEXT AS ora  FROM plc2.contatori ORDER BY ora DESC"""
+    query6 = """SELECT id,stato,"ora"::TEXT AS ora  FROM plc2.notifiche ORDER BY ora DESC"""
+    query7 = """SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,"ora"::TEXT AS ora FROM plc3.stati ORDER BY ora DESC"""
+    query8 = """SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU,"ora"::TEXT AS ora  FROM plc3.contatori ORDER BY ora DESC"""
+    query9 = """SELECT id,stato,"ora"::TEXT AS ora  FROM plc3.notifiche ORDER BY ora DESC"""
     try:
-        data1s = await db.fetch_all("""SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc1.stati ORDER BY ora DESC""")
-        data1c = await db.fetch_all("""SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc1.contatori ORDER BY ora DESC""")
-        data1n = await db.fetch_all("""SELECT id,stato,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc1.notifiche""")
-        data2s = await db.fetch_all("""SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc2.stati ORDER BY ora DESC""")
-        data2c = await db.fetch_all("""SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc2.contatori ORDER BY ora DESC""")
-        data2n = await db.fetch_all("""SELECT id,stato,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc2.notifiche""")
-        data3s = await db.fetch_all("""SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc3.stati ORDER BY ora DESC""")
-        data3c = await db.fetch_all("""SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc3.contatori ORDER BY ora DESC""")
-        data3n = await db.fetch_all("""SELECT id,stato,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc3.notifiche""")
+        data1s = await db.fetch_all(query1)
+        data1c = await db.fetch_all(query2)
+        data1n = await db.fetch_all(query3)
+        data2s = await db.fetch_all(query4)
+        data2c = await db.fetch_all(query5)
+        data2n = await db.fetch_all(query6)
+        data3s = await db.fetch_all(query7)
+        data3c = await db.fetch_all(query8)
+        data3n = await db.fetch_all(query9)
 
         plc1.aggiornaStato(list(data1s[0].values())[:-1])
         plc1.aggiornaContatori(list(data1c[0].values())[:-1])
@@ -60,15 +69,15 @@ async def websocket_endpoint(websocket: WebSocket):
         })
         while True:
             await db.connect()
-            data1s = await db.fetch_all("""SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc1.stati""")
-            data1c = await db.fetch_all("""SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc1.contatori""")
-            data1n = await db.fetch_all("""SELECT id, stato, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc1.notifiche""")
-            data2s = await db.fetch_all("""SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc2.stati""")
-            data2c = await db.fetch_all("""SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc2.contatori""")
-            data2n = await db.fetch_all("""SELECT id, stato, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc2.notifiche""")
-            data3s = await db.fetch_all("""SELECT acceso,blocco,regime,wTermico,wAnomaliaNastro,wMancanzaProdotto,wPieno,wPortelloneAperto,aAnomaliaGenerica,aMotoreNastro,aMancanzaConsenso,aTemperaturaProdottoAlta,aEmergenzaInserita,aTemperaturaCpuElevata,aAggraffatriceSpenta,aNastroSpento,to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc3.stati""")
-            data3c = await db.fetch_all("""SELECT contatorePezziTotale,contatorePezziParziale,contatorePezziParzialeBackup,velocitaProduzionePezziMinuto,temperaturaCPU, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora  FROM plc3.contatori""")
-            data3n = await db.fetch_all("""SELECT id, stato, to_char(ora, 'YYYY-MM-DD"T"HH24:MI:SS.US') AS ora FROM plc3.notifiche""")
+            data1s = await db.fetch_all(query1)
+            data1c = await db.fetch_all(query2)
+            data1n = await db.fetch_all(query3)
+            data2s = await db.fetch_all(query4)
+            data2c = await db.fetch_all(query5)
+            data2n = await db.fetch_all(query6)
+            data3s = await db.fetch_all(query7)
+            data3c = await db.fetch_all(query8)
+            data3n = await db.fetch_all(query9)
             if not plc1.controlloStato(list(data1s[0].values())[:-1]):
                 plc1.aggiornaStato(list(data1s[0].values())[:-1])
                 await websocket.send_json({"plc1": {
